@@ -261,13 +261,22 @@ public class SpringApplication {
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
 		// 选择WEB类型，通过看内存中已经加载的类来判断是否需要WEB和需要哪种WEB
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
+		// 调用三次getSpringFactoriesInstances方法，从spring.factories文件里获取入参对应的实现类
 		this.bootstrapRegistryInitializers = new ArrayList<>(
 				getSpringFactoriesInstances(BootstrapRegistryInitializer.class));
+		// ApplicationContext初始化工厂
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+		// 监听器
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+		// 获取调用main方法的Class
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
+	/**
+	 * 获取调用main方法的Class
+	 * 通过RuntimeException.getStackTrace获取
+	 * @return
+	 */
 	private Class<?> deduceMainApplicationClass() {
 		try {
 			StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
@@ -286,11 +295,16 @@ public class SpringApplication {
 	/**
 	 * Run the Spring application, creating and refreshing a new
 	 * {@link ApplicationContext}.
-	 * @param args the application arguments (usually passed from a Java main method)
-	 * @return a running {@link ApplicationContext}
+	 *
+	 * 运行Spring应用程序，创建并刷新一个新的ApplicationContext
+	 *
+	 * @param args the application arguments (usually passed from a Java main method)  应用程序参数(通常从Java主方法传递)
+	 * @return a running {@link ApplicationContext} 一个运行的ApplicationContext
 	 */
 	public ConfigurableApplicationContext run(String... args) {
+		// 启动时间，纳秒级别
 		long startTime = System.nanoTime();
+		// 创建默认的执行上下文
 		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
 		ConfigurableApplicationContext context = null;
 		configureHeadlessProperty();
@@ -1230,7 +1244,9 @@ public class SpringApplication {
 	/**
 	 * Sets the {@link ApplicationContextInitializer} that will be applied to the Spring
 	 * {@link ApplicationContext}.
-	 * @param initializers the initializers to set
+	 * @param initializers the initializers to set 要设置的初始化式
+	 *
+	 * 设置将应用于Spring的ApplicationContextInitializer
 	 */
 	public void setInitializers(Collection<? extends ApplicationContextInitializer<?>> initializers) {
 		this.initializers = new ArrayList<>(initializers);
@@ -1257,7 +1273,9 @@ public class SpringApplication {
 	/**
 	 * Sets the {@link ApplicationListener}s that will be applied to the SpringApplication
 	 * and registered with the {@link ApplicationContext}.
-	 * @param listeners the listeners to set
+	 * @param listeners the listeners to set 要设置的监听器
+	 *
+	 * 设置将应用到SpringApplication并注册到ApplicationContext的ApplicationListeners
 	 */
 	public void setListeners(Collection<? extends ApplicationListener<?>> listeners) {
 		this.listeners = new ArrayList<>(listeners);
