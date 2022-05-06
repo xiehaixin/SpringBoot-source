@@ -307,6 +307,11 @@ public class SpringApplication {
 		// 创建默认的执行上下文
 		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
 		ConfigurableApplicationContext context = null;
+		/*
+		* java.awt.headless=true（如果不设置默认为true）
+		* 告诉程序，现在你要工作在Headless  mode下，就不要指望硬件帮忙了，你得自力更生，依靠系统的计算能力模拟出这些特性来
+		* 通常B/S型Web应用运行于无显示设备、驱动的服务器端环境中，但是有使用AWT绘图接口的可能（例如：用Images、Fonts接口生成图片验证码）；所以给Tomcat、Weblogic附加参数-Djava.awt.headless=true，强制使用Headless版本的AWT实现类，就能避免图形环境缺失所导致的程序出错；
+		*/
 		configureHeadlessProperty();
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting(bootstrapContext, this.mainApplicationClass);
@@ -464,7 +469,10 @@ public class SpringApplication {
 		/*
 		 加载spring.factories文件并存到SpringFactoriesLoader.cache里面，
 		 然后获取BootstrapRegistryInitializer对应的实现类，
-		 显然第一次加载是没有对应的实现类的
+		 显然第一次加载是没有对应的实现类的 new SpringApplication()
+		 第二次是ApplicationContextInitializer.class是有实现类的 new SpringApplication()
+		 第三次是ApplicationListener.class是有实现类的 new SpringApplication()
+		 第四次是SpringApplicationRunListener.class是有实现类的 SpringApplication.run()
 		*/
 		Set<String> names = new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(type, classLoader));
 		// 第一次是空的instances，因为是根据names的数量来实例化的
